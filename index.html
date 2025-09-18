@@ -11,9 +11,6 @@
   <table class="table table-bordered" id="data-table">
     <thead>
       <tr>
-        <th>№</th>
-        <th>Прізвище Ім'я</th>
-        <th>Дата</th>
       </tr>
     </thead>
     <tbody class="table-group-divider">
@@ -29,7 +26,18 @@
       const result = await response.text();
       const finalResult = result.split("\r\n").map(row => row.split(","));
       const tableBody = document.querySelector('#data-table tbody');
-      finalResult.forEach(row => {
+      const tableHeader = document.querySelector('#data-table thead');
+      
+      const header = finalResult[0];
+        const tr = document.createElement('tr');
+        header.forEach(cell => {
+          const th = document.createElement('th');
+          th.textContent = cell.trim();
+          tr.appendChild(th);
+        });
+        tableHeader.appendChild(tr);
+
+      finalResult.slice(1).forEach(row => {
         const tr = document.createElement('tr');
         row.forEach(cell => {
           const td = document.createElement('td');
