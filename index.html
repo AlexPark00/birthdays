@@ -7,28 +7,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 <body>
-<div class="container mt-5">
-  <table class="table table-bordered" id="data-table">
-    <thead>
-      <tr>
-      </tr>
-    </thead>
-    <tbody class="table-group-divider">
+  <div class="container mt-5">
+    <table class="table table-bordered" id="data-table">
+      <thead>
+        <tr>
+        </tr>
+      </thead>
+     <tbody class="table-group-divider">
     </tbody>
   </table>
 </div>
 
-<script type="text/javascript">
+<script type="module">
     async function getData() {
       const url =
         'https://docs.google.com/spreadsheets/d/e/2PACX-1vTy4CbcRFa6kC088Z4jrVKVk3QPjJ7uU6j4S_5ukmGfPVJLe_aIKPo4tiyALxrIV6ee8Br5GT-yyKuj/pub?output=csv';
       const response = await fetch(url);
       const result = await response.text();
-      const finalResult = result.split("\r\n").map(row => row.split(","));
+      const sortedResult = result.split("\r\n").map(row => row.split(","));
       const tableBody = document.querySelector('#data-table tbody');
       const tableHeader = document.querySelector('#data-table thead');
       
-      const header = finalResult[0];
+      const header = sortedResult[0];
         const tr = document.createElement('tr');
         header.forEach(cell => {
           const th = document.createElement('th');
@@ -37,19 +37,41 @@
         });
         tableHeader.appendChild(tr);
 
-      finalResult.slice(1).forEach(row => {
+      let finalResult = sortedResult.slice(1).sort((a, b) => {
+        const dateA = new Date(a[2].split('.').reverse().join('-'));
+        const dateB = new Date(b[2].split('.').reverse().join('-'));
+        return dateA - dateB;
+      });
+      
+      const today = new Date().toISOString().split('T')[0];
+      console.log(today)
+
+      finalResult.forEach(row => {
         const tr = document.createElement('tr');
-        row.forEach(cell => {
+        row.forEach((cell, index) => {
           const td = document.createElement('td');
           td.textContent = cell.trim();
+          if (index === 2){
+            const date = new Date(cell.split('.').reverse().join('-')).toISOString().split('T')[0];
+            console.log(date);
+            if (date === today){
+              tr.classList.add('table-success');
+              const jsConfetti = new JSConfetti();
+              jsConfetti.addConfetti();
+            }
+          }
           tr.appendChild(td);
         });
         tableBody.appendChild(tr);
     });
   }
-  window.onload = getData;
+
+window.onload = getData();
+
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
 
 </body>
 </html>
