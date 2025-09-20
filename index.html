@@ -38,22 +38,20 @@
         tableHeader.appendChild(tr);
 
       let finalResult = sortedResult.slice(1).sort((a, b) => {
-        const dateA = new Date(a[2].split('.').reverse().join('-'));
-        const dateB = new Date(b[2].split('.').reverse().join('-'));
+        const dateA = new Date(a[3].split('.').reverse().join('-'));
+        const dateB = new Date(b[3].split('.').reverse().join('-'));
         return dateA - dateB;
       });
       
       const today = new Date().toISOString().split('T')[0];
-      console.log(today)
 
       finalResult.forEach(row => {
         const tr = document.createElement('tr');
         row.forEach((cell, index) => {
           const td = document.createElement('td');
           td.textContent = cell.trim();
-          if (index === 2){
+          if (index === 3){
             const date = new Date(cell.split('.').reverse().join('-')).toISOString().split('T')[0];
-            console.log(date);
             if (date === today){
               tr.classList.add('table-success');
               const jsConfetti = new JSConfetti();
